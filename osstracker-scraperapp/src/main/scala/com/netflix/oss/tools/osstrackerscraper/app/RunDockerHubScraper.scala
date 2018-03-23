@@ -15,7 +15,7 @@
  */
 package com.netflix.oss.tools.osstrackerscraper.app
 
-import com.netflix.oss.tools.osstrackerscraper.{BoxComScraper, DockerHubScraper}
+import com.netflix.oss.tools.osstrackerscraper.DockerHubScraper
 import org.slf4j.LoggerFactory
 
 object RunDockerHubScraper {
