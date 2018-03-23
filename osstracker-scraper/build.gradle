@@ -8,6 +8,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'org.slf4j:slf4j-log4j12:1.7.13'
     compile 'org.kohsuke:github-api:1.92'
+    compile 'com.box:box-java-sdk:2.13.0'
     compile 'com.typesafe.play:play-json_2.12:2.6.8'
     compile 'joda-time:joda-time:2.9.1'
     compile 'org.rogach:scallop_2.12:3.1.1'
