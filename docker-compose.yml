@@ -103,7 +103,7 @@ services:
         window: 120s
 
   osstracker-scraper-cassandra:
-    container_name: osstracker-scraper-cassandra
+    container_name: osstracker-github-scraper-cassandra
     image:  netflixoss/osstracker-scraper:latest
     depends_on:
       - cassandra
@@ -119,7 +119,7 @@ services:
     command: /bin/sh -c "sleep 100 && java -cp /osstracker-scraperapp-all.jar com.netflix.oss.tools.osstrackerscraper.app.RunGithubScraper --action updatecassandra"
 
   osstracker-scraper-elasticsearch:
-    container_name: osstracker-scraper-elasticsearch
+    container_name: osstracker-github-scraper-elasticsearch
     image:  netflixoss/osstracker-scraper:latest
     build:
       context: osstracker-scraperapp
@@ -135,3 +135,42 @@ services:
       github_org: ${github_org}
     restart: always
     command: /bin/sh -c "sleep 160 && java -cp /osstracker-scraperapp-all.jar com.netflix.oss.tools.osstrackerscraper.app.RunGithubScraper --action updateelasticsearch"
+
+  osstracker-dockerhub-scraper:
+    container_name: osstracker-dockerhub-scraper
+    image:  netflixoss/osstracker-scraper:latest
+    build:
+      context: osstracker-scraperapp
+    depends_on:
+      - elasticsearch
+    environment:
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+      DOCKER_HUB_ORG: ${DOCKER_HUB_ORG}
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    command: /bin/sh -c "sleep 180 && java -cp /osstracker-scraperapp-all.jar com.netflix.oss.tools.osstrackerscraper.app.RunDockerHubScraper"
+
+  osstracker-boxcom-scraper:
+    container_name: osstracker-boxcom-scraper
+    image:  netflixoss/osstracker-scraper:latest
+    build:
+      context: osstracker-scraperapp
+    depends_on:
+      - elasticsearch
+    environment:
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+      BOX_ROOT_FOLDER_ID: ${BOX_ROOT_FOLDER_ID}
+      BOX_API_KEY: ${BOX_API_KEY}
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    command: /bin/sh -c "sleep 200 && java -cp /osstracker-scraperapp-all.jar com.netflix.oss.tools.osstrackerscraper.app.RunBoxComScraper"
