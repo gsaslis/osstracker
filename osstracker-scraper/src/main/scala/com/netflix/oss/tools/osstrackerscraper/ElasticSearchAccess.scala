@@ -115,6 +115,30 @@ class ElasticSearchAccess(esHost: String, esPort: Int) {
         }
     }
   }
+
+  def getESDocForDockerHubStats(simpleDate: String, projectName: String): Option[JsObject] = {
+    val client = HttpClientBuilder.create().build()
+    val req = new HttpPost(getFullUrl("/osstracker/docker_stats/_search"))
+    req.addHeader("Content-Type", "application/json")
+    val jsonDoc = raw"""{"query":{"bool":{"must":[{"match":{"image_name":"$projectName"}},{"match":{"asOfYYYYMMDD":"$simpleDate"}}]}}}"""
+    req.setEntity(new StringEntity(jsonDoc))
+
+    val resp = client.execute(req)
+
+    val resC = resp.getStatusLine.getStatusCode
+    resp.getStatusLine.getStatusCode match {
+      case 404 => None: Option[JsObject]
+      case _ =>
+        val respS = EntityUtils.toString(resp.getEntity)
+        val jsVal = Json.parse(respS)
+        val hits = (jsVal \ "hits" \ "total").as[Int]
+        hits match {
+          case 0 => None: Option[JsObject]
+          case _ => Some(((jsVal \ "hits" \ "hits")(0) \ "_source").get.asInstanceOf[JsObject])
+        }
+    }
+  }
+
   def getFullUrl(uri: String): String = {
     s"http://${esHost}:${esPort}${uri}"
   }
