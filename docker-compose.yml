@@ -45,6 +45,8 @@ services:
   osstracker-console:
     container_name: osstracker-console
     image: netflixoss/osstracker-console:latest
+    build:
+      context: osstracker-console
     ports:
       - "3000:3000"
     environment:
@@ -119,6 +121,8 @@ services:
   osstracker-scraper-elasticsearch:
     container_name: osstracker-scraper-elasticsearch
     image:  netflixoss/osstracker-scraper:latest
+    build:
+      context: osstracker-scraperapp
     depends_on:
       - cassandra
       - elasticsearch
